@@ -1,0 +1,177 @@
+/* ============================================================
+   lk-gallery — Shadow DOM styles
+   ============================================================ */
+
+:host {
+	display: block;
+}
+
+/* Grid layout (trigger mode) */
+
+:host([layout="grid"]) {
+	display: grid;
+	grid-template-columns: repeat(
+			var(--gallery-cols, auto-fit),
+			minmax(var(--gallery-min-width, 150px), 1fr)
+		);
+	gap: var(--gallery-gap, 16px);
+	width: 100%;
+}
+
+:host([layout="grid"]) ::slotted(img) {
+	display: block !important;
+	margin: 0 !important;
+	width: 100% !important;
+	height: var(--gallery-image-height, 150px) !important;
+	object-fit: var(--gallery-image-fit, cover) !important;
+	border-radius: var(--gallery-radius, 8px) !important;
+	cursor: pointer;
+	transition:
+		transform 0.2s ease,
+		box-shadow 0.2s ease;
+}
+
+:host([layout="grid"]) ::slotted(img:hover) {
+	transform: scale(1.02);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Modal dialog */
+
+dialog.modal {
+	width: 100%;
+	height: 100%;
+	max-width: 100%;
+	max-height: 100%;
+	margin: 0;
+	padding: 0;
+	border: none;
+	background: transparent;
+	color: var(--gallery-modal-color, #ffffff);
+	overflow: hidden;
+}
+
+dialog.modal[open] {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+dialog.modal::backdrop {
+	background: var(--gallery-backdrop, rgba(0, 0, 0, 0.9));
+	animation: fade-in 0.3s ease forwards;
+}
+
+/* Modal content */
+
+.modal-content {
+	width: 100%;
+	height: 100%;
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	background: var(--gallery-modal-background, transparent);
+	animation: fade-in 0.3s ease forwards;
+}
+
+.modal-content:fullscreen {
+	background: var(--gallery-modal-fullscreen-background, #111111);
+}
+
+@keyframes fade-in {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+/* Carousel container */
+
+.carousel-container {
+	flex: 1;
+	width: 100%;
+	height: 100%;
+	position: relative;
+	z-index: 2;
+}
+
+/* Slide content */
+
+.slide-content {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+}
+
+.slide-content lk-panzoom {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+lk-panzoom img {
+	max-width: 90%;
+	max-height: calc(100% - var(--gallery-reserved-ui-height, 150px));
+	width: auto;
+	height: auto;
+	object-fit: contain;
+	box-sizing: border-box;
+	padding: 0;
+}
+
+lk-panzoom video {
+	max-width: 100%;
+	max-height: 100%;
+	width: auto;
+	height: auto;
+	object-fit: contain;
+	box-sizing: border-box;
+	padding: 0;
+}
+
+/* HTML-type slides (video clones, arbitrary embeds) */
+
+.html-slide {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.html-slide video {
+	max-width: 100%;
+	max-height: calc(100% - var(--gallery-reserved-ui-height, 80px));
+	width: auto;
+	height: auto;
+	object-fit: contain;
+}
+
+/* Caption */
+
+.caption {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	z-index: 1;
+	padding: 30px;
+	text-align: center;
+	color: var(--gallery-caption-color, #ffffff);
+	background: var(
+		--gallery-caption-background,
+		linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent)
+	);
+	pointer-events: none;
+}
+
+:host([show-thumbnails]) .caption {
+	bottom: var(--gallery-caption-with-thumbnails-bottom, 64px);
+}
