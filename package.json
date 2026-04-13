@@ -1,0 +1,35 @@
+{
+  "name": "",
+  "license": "MIT",
+  "description": "A simple website for a local business",
+  "author": "Carlos Alberto Giralt Torriente",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/carlosgiralt/simple-website.git"
+  },
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build --mode lib",
+    "preview": "vite build && vite preview",
+    "docs:dev": "astro dev",
+    "docs:start": "astro dev",
+    "docs:build": "astro build",
+    "docs:preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/starlight": "^0.38.3",
+    "@catppuccin/starlight": "^2.0.1",
+    "astro": "^6.0.1",
+    "lit": "^3.3.2",
+    "sharp": "^0.34.2"
+  },
+  "devDependencies": {
+    "@webcomponents/template-shadowroot": "^0.2.1",
+    "rollup-plugin-minify-template-literals": "^1.1.7",
+    "typescript": "^6.0.2",
+    "vite": "^8.0.8"
+  }
+}
