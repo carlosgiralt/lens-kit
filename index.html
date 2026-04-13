@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/src/assets/gear-ui.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lens Kit — Dev</title>
+    <script type="module" src="/src/ui/index.ts"></script>
+    <style>
+      *, *::before, *::after { box-sizing: border-box; }
+
+      body {
+        font-family: system-ui, sans-serif;
+        margin: 0;
+        padding: 2rem;
+        background: #0f0f0f;
+        color: #e5e5e5;
+        display: flex;
+        flex-direction: column;
+        gap: 3rem;
+      }
+
+      h1 {
+        margin: 0 0 0.25rem;
+        font-size: 1.5rem;
+      }
+
+      h2 {
+        margin: 0 0 1rem;
+        font-size: 1.1rem;
+        color: #a0a0a0;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        border-bottom: 1px solid #2a2a2a;
+        padding-bottom: 1.5rem;
+      }
+
+      header img {
+        width: 40px;
+        height: 40px;
+        background: #7c3aed;
+        border-radius: 50%;
+        padding: 4px;
+      }
+
+      section {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+      }
+
+      .example {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .example-label {
+        font-size: 0.8rem;
+        color: #666;
+        font-family: monospace;
+        background: #1a1a1a;
+        border: 1px solid #2a2a2a;
+        border-radius: 4px;
+        padding: 0.2rem 0.5rem;
+        align-self: flex-start;
+      }
+
+      .demo-box {
+        border: 1px solid #2a2a2a;
+        border-radius: 10px;
+        overflow: hidden;
+        background: #1a1a1a;
+      }
+
+      /* ── Carousel demos ─────────────────────── */
+      .carousel-wrap {
+        height: 240px;
+      }
+
+      .slide {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: white;
+      }
+
+      /* ── Gallery demos ──────────────────────── */
+      .gallery-wrap {
+        padding: 1.25rem;
+      }
+
+      lk-gallery {
+        --gallery-cols: 4;
+        --gallery-min-width: 140px;
+        --gallery-gap: 10px;
+        --gallery-image-height: 160px;
+        --gallery-radius: 6px;
+      }
+    </style>
+  </head>
+  <body>
+
+    <header>
+      <div>
+        <h1>Lens Kit</h1>
+        <span style="color:#666; font-size:0.85rem;">Development sandbox</span>
+      </div>
+    </header>
+
+    <!-- ════════════════════════════════════════
+         CAROUSEL
+    ═════════════════════════════════════════ -->
+    <section>
+      <h2>Carousel</h2>
+
+      <!-- Basic -->
+      <div class="example">
+        <span class="example-label">&lt;lk-carousel&gt; — basic</span>
+        <div class="demo-box carousel-wrap">
+          <lk-carousel show-dots>
+            <div class="slide" style="background:#7c3aed;">Slide 1</div>
+            <div class="slide" style="background:#2563eb;">Slide 2</div>
+            <div class="slide" style="background:#059669;">Slide 3</div>
+            <div class="slide" style="background:#d97706;">Slide 4</div>
+          </lk-carousel>
+        </div>
+      </div>
+
+      <!-- Multi-slide (3 per view) -->
+      <div class="example">
+        <span class="example-label">&lt;lk-carousel slide-width="33.33"&gt; — 3 slides per view</span>
+        <div class="demo-box carousel-wrap">
+          <lk-carousel slide-width="33.33" show-dots="false">
+            <img src="https://picsum.photos/id/1018/600/400" style="height:240px;object-fit:cover;" />
+            <img src="https://picsum.photos/id/1015/600/400" style="height:240px;object-fit:cover;" />
+            <img src="https://picsum.photos/id/1043/600/400" style="height:240px;object-fit:cover;" />
+            <img src="https://picsum.photos/id/1019/600/400" style="height:240px;object-fit:cover;" />
+            <img src="https://picsum.photos/id/1020/600/400" style="height:240px;object-fit:cover;" />
+            <img src="https://picsum.photos/id/1021/600/400" style="height:240px;object-fit:cover;" />
+          </lk-carousel>
+        </div>
+      </div>
+
+      <!-- Thumbnails -->
+      <div class="example">
+        <span class="example-label">&lt;lk-carousel show-thumbnails&gt;</span>
+        <div class="demo-box carousel-wrap" style="height:310px;">
+          <lk-carousel show-thumbnails show-dots="false">
+            <img src="https://picsum.photos/id/1018/1920/1080" />
+            <img src="https://picsum.photos/id/1019/1920/1080" />
+            <img src="https://picsum.photos/id/1020/1920/1080" />
+            <img src="https://picsum.photos/id/1021/1920/1080" />
+            <img src="https://picsum.photos/id/1022/1920/1080" />
+          </lk-carousel>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════
+         GALLERY
+    ═════════════════════════════════════════ -->
+    <section>
+      <h2>Gallery</h2>
+
+      <!-- Grid layout -->
+      <div class="example">
+        <span class="example-label">&lt;lk-gallery layout="grid"&gt;</span>
+        <div class="demo-box gallery-wrap">
+          <lk-gallery layout="grid">
+            <img src="https://picsum.photos/id/1018/1920/1080" alt="Mountains" data-caption="Beautiful mountains" />
+            <img src="https://picsum.photos/id/1015/1920/1080" alt="River" data-caption="River landscape" />
+            <img src="https://picsum.photos/id/1043/1920/1080" alt="Forest" data-caption="Forest path" />
+            <img src="https://picsum.photos/id/1019/1920/1080" alt="Seascape" data-caption="Seascape" />
+            <img src="https://picsum.photos/id/1020/1920/1080" alt="Bears" data-caption="Bears in the wild" />
+            <img src="https://picsum.photos/id/1021/1920/1080" alt="Snow" data-caption="Snowy mountains" />
+            <img src="https://picsum.photos/id/1022/1920/1080" alt="Aurora" data-caption="Aurora borealis" />
+            <img src="https://picsum.photos/id/1023/1920/1080" alt="Forest" data-caption="Forest mist" />
+          </lk-gallery>
+        </div>
+      </div>
+
+      <!-- Gallery wrapping a carousel — full width -->
+      <div class="example">
+        <span class="example-label">&lt;lk-gallery&gt; + &lt;lk-carousel&gt;</span>
+        <div class="demo-box carousel-wrap">
+          <lk-carousel>
+            <img src="https://picsum.photos/id/1018/1920/1080" data-caption="Beautiful mountains" />
+            <img src="https://picsum.photos/id/1015/1920/1080" data-caption="River landscape" />
+            <img src="https://picsum.photos/id/1043/1920/1080" data-caption="Forest path" />
+            <img src="https://picsum.photos/id/1019/1920/1080" data-caption="Seascape" />
+          </lk-carousel>
+        </div>
+        <div style="color:#555; font-size:0.8rem; padding-left:0.25rem;">
+          ↑ wrap with &lt;lk-gallery&gt; to make images clickable
+        </div>
+        <div class="demo-box carousel-wrap">
+          <lk-gallery>
+            <lk-carousel>
+              <img src="https://picsum.photos/id/1018/1920/1080" data-caption="Beautiful mountains" />
+              <img src="https://picsum.photos/id/1015/1920/1080" data-caption="River landscape" />
+              <img src="https://picsum.photos/id/1043/1920/1080" data-caption="Forest path" />
+              <img src="https://picsum.photos/id/1019/1920/1080" data-caption="Seascape" />
+            </lk-carousel>
+          </lk-gallery>
+        </div>
+      </div>
+
+      <!-- Gallery + carousel (3 per view) + thumbnails in modal -->
+      <div class="example">
+        <span class="example-label">&lt;lk-gallery show-thumbnails&gt; + &lt;lk-carousel slide-width="33.33"&gt;</span>
+        <div class="demo-box gallery-wrap">
+          <lk-gallery layout="grid" show-thumbnails>
+            <img src="https://picsum.photos/id/1018/1920/1080" data-caption="Beautiful mountains" />
+            <img src="https://picsum.photos/id/1015/1920/1080" data-caption="River landscape" />
+            <img src="https://picsum.photos/id/1043/1920/1080" data-caption="Forest path" />
+            <img src="https://picsum.photos/id/1019/1920/1080" data-caption="Seascape" />
+            <img src="https://picsum.photos/id/1020/1920/1080" data-caption="Bears in the wild" />
+          </lk-gallery>
+        </div>
+      </div>
+
+      <!-- Full toolbar -->
+      <div class="example">
+        <span class="example-label">&lt;lk-gallery toolbar="zoom-in, zoom-out, 1:1, rotate-left, rotate-right, flip-h, flip-v, reset, |, play, fullscreen, close"&gt;</span>
+        <div class="demo-box gallery-wrap">
+          <lk-gallery layout="grid" toolbar="zoom-in, zoom-out, 1:1, rotate-left, rotate-right, flip-h, flip-v, reset, |, play, fullscreen, close">
+            <img src="https://picsum.photos/id/1018/1920/1080" data-caption="Beautiful mountains" />
+            <img src="https://picsum.photos/id/1015/1920/1080" data-caption="River landscape" />
+            <img src="https://picsum.photos/id/1043/1920/1080" data-caption="Forest path" />
+          </lk-gallery>
+        </div>
+      </div>
+
+      <!-- Video -->
+      <div class="example">
+        <span class="example-label">&lt;lk-gallery&gt; — video support</span>
+        <div class="demo-box gallery-wrap">
+          <lk-gallery toolbar="fullscreen, close">
+            <video width="320" height="200" poster="https://picsum.photos/id/1067/800/450" style="cursor:pointer; border-radius:6px;">
+              <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4" />
+            </video>
+          </lk-gallery>
+        </div>
+      </div>
+    </section>
+
+  </body>
+</html>
