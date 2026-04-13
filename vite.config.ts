@@ -4,6 +4,8 @@ import minifyTemplateLiterals from 'rollup-plugin-minify-template-literals';
 
 export default defineConfig(({ mode }) => ({
   plugins: mode === 'lib' ? [minifyTemplateLiterals()] : [],
+  // Sandbox build is served at /lens-kit/ on GitHub Pages; lib build has no base requirement
+  base: mode === 'lib' ? '/' : '/lens-kit/',
   resolve: {
     alias: {
       '@ui': fileURLToPath(new URL('./src/ui', import.meta.url))
