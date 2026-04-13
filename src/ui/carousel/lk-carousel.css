@@ -1,0 +1,174 @@
+/* ============================================================
+   lk-carousel — Shadow DOM styles
+   ============================================================ */
+
+:host {
+	display: flex;
+	flex-direction: column;
+	position: relative;
+	width: 100%;
+	height: 100%;
+	touch-action: pan-y; /* allow vertical scrolling, block horizontal to handle swipe */
+}
+
+/* Track */
+
+.carousel-main {
+	position: relative;
+	flex: 1;
+	overflow: hidden;
+	min-height: 0;
+}
+
+.track {
+	display: flex;
+	will-change: transform;
+	transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+	height: 100%;
+}
+
+.track.dragging {
+	transition: none;
+}
+
+/* Slotted content */
+
+::slotted(*) {
+	flex: 0 0 var(--slide-width, 100%);
+	width: var(--slide-width, 100%);
+	box-sizing: border-box;
+}
+
+::slotted(img) {
+	margin: 0 !important;
+	aspect-ratio: var(--carousel-aspect-ratio, 16 / 9) !important;
+	object-fit: var(--carousel-image-fit, cover) !important;
+}
+
+/* Dots */
+
+.dots {
+	display: flex;
+	justify-content: center;
+	gap: var(--carousel-dots-gap, 8px);
+	margin-top: var(--carousel-dots-margin-top, 12px);
+	padding-bottom: var(--carousel-dots-padding-bottom, 12px);
+}
+
+.dot {
+	width: var(--carousel-dot-size, 10px);
+	height: var(--carousel-dot-size, 10px);
+	border-radius: 50%;
+	background: var(--carousel-dot-bg, rgba(255, 255, 255, 0.55));
+	border: var(--carousel-dot-border, 1px solid rgba(0, 0, 0, 0.25));
+	padding: 0;
+	cursor: pointer;
+	opacity: var(--carousel-dot-opacity, 0.35);
+}
+
+.dot.active {
+	background: var(--carousel-dot-active-bg, #ffffff);
+	opacity: var(--carousel-dot-active-opacity, 1);
+}
+
+/* Thumbnails */
+
+.thumbnails {
+	display: flex;
+	justify-content: center;
+	gap: var(--carousel-thumbnails-gap, 8px);
+	margin-top: var(--carousel-thumbnails-margin-top, 12px);
+	padding-bottom: var(--carousel-thumbnails-padding-bottom, 12px);
+	overflow-x: auto;
+}
+
+.thumbnail {
+	width: var(--carousel-thumbnail-size, 60px);
+	height: var(--carousel-thumbnail-size, 60px);
+	border-radius: var(--carousel-thumbnail-radius, 4px);
+	border: var(--carousel-thumbnail-border, 2px solid rgba(255, 255, 255, 0.35));
+	background-size: cover;
+	background-position: center;
+	background-color: var(--carousel-thumbnail-bg, rgba(0, 0, 0, 0.25));
+	flex-shrink: 0;
+	padding: 0;
+	cursor: pointer;
+	opacity: var(--carousel-thumbnail-opacity, 0.6);
+	transition: opacity 0.2s;
+}
+
+.thumbnail.active,
+.thumbnail:hover {
+	opacity: 1;
+}
+
+.thumbnail.active {
+	border-color: var(--carousel-thumbnail-active-border-color, #ffffff);
+}
+
+/* Overlay mode */
+
+:host([overlay]) .thumbnails,
+:host([overlay]) .dots {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	margin: 0;
+	padding: var(--carousel-overlay-padding, 20px);
+	padding-bottom: var(--carousel-overlay-padding-bottom, 30px);
+	background: var(
+		--carousel-overlay-background,
+		linear-gradient(to top, rgba(0, 0, 0, 0.72), transparent)
+	);
+	z-index: 20;
+}
+
+/* Navigation buttons */
+
+.nav-btn {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	background: var(--carousel-nav-bg, rgba(0, 0, 0, 0.55));
+	border: var(--carousel-nav-border, 1px solid rgba(255, 255, 255, 0.2));
+	border-radius: 50%;
+	width: var(--carousel-nav-size, 44px);
+	height: var(--carousel-nav-size, 44px);
+	z-index: 10;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: var(--carousel-nav-color, #ffffff);
+	box-shadow: var(--carousel-nav-shadow, 0 4px 14px rgba(0, 0, 0, 0.35));
+	cursor: pointer;
+	transition:
+		background 0.2s,
+		color 0.2s,
+		opacity 0.2s;
+}
+
+.nav-btn:hover {
+	background: var(--carousel-nav-hover-bg, rgba(0, 0, 0, 0.75));
+	color: var(--carousel-nav-hover-color, #ffffff);
+}
+
+.nav-btn:focus-visible,
+.dot:focus-visible,
+.thumbnail:focus-visible {
+	outline: var(--carousel-focus-outline, 2px solid #ffffff);
+	outline-offset: 2px;
+}
+
+.nav-btn:disabled {
+	opacity: var(--carousel-nav-disabled-opacity, 0.35);
+	cursor: not-allowed;
+}
+
+.nav-prev {
+	left: var(--carousel-nav-offset, 16px);
+}
+
+.nav-next {
+	right: var(--carousel-nav-offset, 16px);
+}
