@@ -1,0 +1,279 @@
+---
+title: Gallery
+description: A modal lightbox that combines carousel navigation with pan and zoom.
+---
+
+import DemoGallery from './DemoGallery.astro';
+
+`lk-gallery` is a modal lightbox that wraps any trigger elements — images, videos, or links — and opens them in a full-screen modal with carousel navigation and pan/zoom support powered by `lk-panzoom`.
+
+## Basic Usage
+
+Wrap `<img>` elements with `lk-gallery`. Clicking any image opens the modal at that index.
+
+```html
+<lk-gallery layout="grid">
+  <img src="https://picsum.photos/id/1018/1920/1080" data-caption="Beautiful mountains" />
+  <img src="https://picsum.photos/id/1015/1920/1080" data-caption="River landscape" />
+  <img src="https://picsum.photos/id/1043/1920/1080" data-caption="Forest path" />
+</lk-gallery>
+```
+
+<DemoGallery layout="grid">
+  <img src="https://picsum.photos/id/1018/1920/1080" data-caption="Beautiful mountains" />
+  <img src="https://picsum.photos/id/1015/1920/1080" data-caption="River landscape" />
+  <img src="https://picsum.photos/id/1043/1920/1080" data-caption="Forest path" />
+</DemoGallery>
+
+## Gallery with Carousel
+
+Nest a `lk-carousel` inside `lk-gallery`. The gallery auto-detects all `<img>` elements and maps clicks to the correct modal slide.
+
+### Full-Width Slides
+
+```html
+<lk-gallery>
+  <lk-carousel>
+    <img src="https://picsum.photos/id/1018/1920/1080" />
+    <img src="https://picsum.photos/id/1015/1920/1080" />
+    <img src="https://picsum.photos/id/1043/1920/1080" />
+  </lk-carousel>
+</lk-gallery>
+```
+
+<DemoGallery>
+  <lk-carousel>
+    <img src="https://picsum.photos/id/1018/1920/1080" />
+    <img src="https://picsum.photos/id/1015/1920/1080" />
+    <img src="https://picsum.photos/id/1043/1920/1080" />
+    <img src="https://picsum.photos/id/1019/1920/1080" />
+    <img src="https://picsum.photos/id/1020/1920/1080" />
+  </lk-carousel>
+</DemoGallery>
+
+### Multi-Slide View
+
+Set `slide-width="33.33"` on the inner carousel to show three images at once.
+
+```html
+<lk-gallery>
+  <lk-carousel slide-width="33.33">
+    <img src="https://picsum.photos/id/1018/1920/1080" />
+    <img src="https://picsum.photos/id/1015/1920/1080" />
+    <img src="https://picsum.photos/id/1043/1920/1080" />
+  </lk-carousel>
+</lk-gallery>
+```
+
+<DemoGallery>
+  <lk-carousel slide-width="33.33">
+    <img src="https://picsum.photos/id/1018/1920/1080" />
+    <img src="https://picsum.photos/id/1015/1920/1080" />
+    <img src="https://picsum.photos/id/1043/1920/1080" />
+    <img src="https://picsum.photos/id/1019/1920/1080" />
+    <img src="https://picsum.photos/id/1020/1920/1080" />
+  </lk-carousel>
+</DemoGallery>
+
+## Thumbnails
+
+Add `show-thumbnails` to display a clickable thumbnail strip at the bottom of the modal.
+
+```html
+<lk-gallery show-thumbnails>
+  <lk-carousel>
+    <img src="https://picsum.photos/id/1018/1920/1080" data-caption="Beautiful mountains" />
+    <img src="https://picsum.photos/id/1019/1920/1080" data-caption="Seascape" />
+    <img src="https://picsum.photos/id/1020/1920/1080" data-caption="Bears in the wild" />
+    <img src="https://picsum.photos/id/1021/1920/1080" data-caption="Snowy mountains" />
+    <img src="https://picsum.photos/id/1022/1920/1080" data-caption="Aurora borealis" />
+  </lk-carousel>
+</lk-gallery>
+```
+
+<DemoGallery showThumbnails>
+  <lk-carousel show-thumbnails>
+    <img src="https://picsum.photos/id/1018/1920/1080" data-caption="Beautiful mountains" />
+    <img src="https://picsum.photos/id/1019/1920/1080" data-caption="Seascape" />
+    <img src="https://picsum.photos/id/1020/1920/1080" data-caption="Bears in the wild" />
+    <img src="https://picsum.photos/id/1021/1920/1080" data-caption="Snowy mountains" />
+    <img src="https://picsum.photos/id/1022/1920/1080" data-caption="Aurora borealis" />
+  </lk-carousel>
+</DemoGallery>
+
+## Customizable Toolbar
+
+Control which actions appear in the modal header using the `toolbar` attribute. Pass a comma-separated list of action names.
+
+| Token | Description |
+|---|---|
+| `zoom` | Zoom in button (alias for `zoom-in`) |
+| `zoom-in` | Zoom in |
+| `zoom-out` | Zoom out |
+| `1:1` | Toggle 1:1 / 2× pixel view |
+| `rotate-left` | Rotate 90° counter-clockwise |
+| `rotate-right` | Rotate 90° clockwise |
+| `flip-h` | Flip horizontally |
+| `flip-v` | Flip vertically |
+| `reset` | Reset zoom, rotation, and flips |
+| `\|` | Visual divider |
+| `play` | Start / stop slideshow (3 s interval) |
+| `fullscreen` | Toggle fullscreen |
+| `close` | Close button |
+
+```html
+<lk-gallery toolbar="zoom-in, zoom-out, 1:1, rotate-left, rotate-right, flip-h, flip-v, reset, |, play, fullscreen, close">
+  <img src="https://picsum.photos/id/1018/1920/1080" />
+  <img src="https://picsum.photos/id/1015/1920/1080" />
+</lk-gallery>
+```
+
+<DemoGallery toolbar="zoom-in, zoom-out, 1:1, rotate-left, rotate-right, flip-h, flip-v, reset, |, play, fullscreen, close">
+  <img src="https://picsum.photos/id/1018/1920/1080" />
+  <img src="https://picsum.photos/id/1015/1920/1080" />
+</DemoGallery>
+
+## Native Video Support
+
+`<video>` elements are first-class citizens. When clicked, the player is duplicated into the modal so it scales correctly with pan/zoom.
+
+```html
+<lk-gallery toolbar="fullscreen, close" show-thumbnails>
+  <video width="100%" height="auto" poster="https://storage.googleapis.com/gtv-videos-bucket/sample/images/BigBuckBunny.jpg" style="max-width: 400px; cursor: pointer;">
+    <source src="https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4" />
+  </video>
+</lk-gallery>
+```
+
+<DemoGallery toolbar="fullscreen, close" show-thumbnails>
+  <video width="100%" height="auto" poster="https://storage.googleapis.com/gtv-videos-bucket/sample/images/BigBuckBunny.jpg" style="max-width: 200px; max-height: 200px; cursor: pointer;">
+    <source src="https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4" />
+  </video>
+</DemoGallery>
+
+### Mixed Media
+
+You can freely mix `<video>` and `<img>` elements within the same gallery or carousel.
+
+```html
+<lk-gallery show-thumbnails>
+  <lk-carousel>
+    <img src="https://picsum.photos/id/1018/1920/1080" data-caption="Photography" />
+    <video width="100%" height="auto" poster="https://storage.googleapis.com/gtv-videos-bucket/sample/images/BigBuckBunny.jpg" data-caption="Big Buck Bunny">
+      <source src="https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4" />
+    </video>
+    <img src="https://picsum.photos/id/1020/1920/1080" data-caption="Bears in the wild" />
+  </lk-carousel>
+</lk-gallery>
+```
+
+<DemoGallery>
+  <lk-carousel show-thumbnails>
+    <img src="https://picsum.photos/id/1018/1920/1080" data-caption="Photography" />
+    <video width="100%" height="auto" poster="https://storage.googleapis.com/gtv-videos-bucket/sample/images/BigBuckBunny.jpg" data-caption="Big Buck Bunny">
+      <source src="https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4" />
+    </video>
+    <img src="https://picsum.photos/id/1020/1920/1080" data-caption="Bears in the wild" />
+  </lk-carousel>
+</DemoGallery>
+
+## Trigger Elements
+
+The gallery scans its slot for these element types:
+
+| Element | Source attribute |
+|---|---|
+| `<img>` | `src` or `data-src` |
+| `<a>` | `href` |
+| `<video>` | cloned into modal |
+| Any element | `data-src` |
+
+## Data Attributes
+
+These attributes can be placed on any trigger element.
+
+| Attribute | Description |
+|---|---|
+| `data-caption` | Caption text displayed at the bottom of the modal slide. |
+| `data-src` | Override or provide the media source for elements that do not natively have `src`. |
+| `data-type` | Set to `"image"` or `"html"` to tell the gallery how to render the item. |
+
+## Programmatic Control
+
+```js
+const gallery = document.querySelector('lk-gallery');
+
+// Open at a specific index
+gallery.initialIndex = 2;
+gallery.open = true;
+
+// Close programmatically
+gallery.close();
+
+// Listen for close events
+gallery.addEventListener('close', () => console.log('Gallery closed'));
+```
+
+## Keyboard Navigation
+
+When the modal is open the following keyboard shortcuts are active:
+
+| Key | Action |
+|---|---|
+| `←` Arrow Left | Previous slide |
+| `→` Arrow Right | Next slide |
+| `Esc` | Close the modal |
+
+## Properties
+
+| Attribute | Type | Default | Description |
+|---|---|---|---|
+| `layout` | `'inline' \| 'grid'` | `'inline'` | Set to `'grid'` to render a CSS grid thumbnail view of the trigger elements. |
+| `toolbar` | `string` | `'zoom, play, fullscreen, close'` | Comma-separated list of toolbar actions. |
+| `show-thumbnails` | `boolean` | `false` | Show a thumbnail strip at the bottom of the modal. |
+| `open` | `boolean` | `false` | Open or close the modal programmatically. |
+| `initial-index` | `number` | `0` | Index of the slide to open when the modal is first shown. |
+
+## Django / Python Booleans
+
+`lk-gallery` also coerces string attribute values so Python-style booleans work in templates.
+
+- truthy: `"True"`, `"true"`, `"1"`, empty attribute presence (`show-thumbnails`)
+- falsy: `"False"`, `"false"`, `"0"`, `"off"`, `"no"`
+
+Use kebab-case attribute names in markup (`show-thumbnails`, not `showThumbnails`).
+
+```django
+<lk-gallery
+  show-thumbnails="{{ show_thumbnails }}"
+  open="{{ open_gallery }}"
+>
+  ...
+</lk-gallery>
+```
+
+## Events
+
+| Event | Description |
+|---|---|
+| `close` | Fired when the modal closes, whether by user action or `gallery.close()`. |
+
+## CSS Custom Properties
+
+| Property | Default | Description |
+|---|---|---|
+| `--gallery-cols` | `auto-fit` | Grid column count (grid layout only). |
+| `--gallery-min-width` | `150px` | Minimum column width in grid layout. |
+| `--gallery-gap` | `16px` | Gap between grid items. |
+| `--gallery-image-height` | `150px` | Height of each grid thumbnail. |
+| `--gallery-image-fit` | `cover` | `object-fit` for grid thumbnails. |
+| `--gallery-radius` | `8px` | Border radius for grid thumbnails. |
+
+```css
+lk-gallery {
+  --gallery-cols: 4;
+  --gallery-gap: 8px;
+  --gallery-image-height: 180px;
+  --gallery-radius: 4px;
+}
+```

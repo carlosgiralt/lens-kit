@@ -1,0 +1,15 @@
+---
+---
+<script>
+  import '@ui/gallery/lk-gallery';
+</script>
+
+<div style="border: 1px solid #eee; border-radius: 8px; padding: 2rem; margin-top: 1rem;">
+  <lk-gallery
+    layout={Astro.props.layout}
+    show-thumbnails={Astro.props['show-thumbnails'] ?? Astro.props.showThumbnails}
+    toolbar={Astro.props.toolbar}
+  >
+    <slot />
+  </lk-gallery>
+</div>

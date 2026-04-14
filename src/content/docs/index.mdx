@@ -1,0 +1,44 @@
+---
+title: Lens Kit
+description: Lightweight, framework-agnostic Web Components for building rich media interfaces.
+template: splash
+hero:
+  tagline: Framework-agnostic Web Components for gallery lightbox, carousel, and pan/zoom — built with Lit and TypeScript.
+  image:
+    file: ../../assets/lens-kit.svg
+  actions:
+    - text: Get Started
+      link: guides/example/
+      icon: right-arrow
+    - text: View on GitHub
+      link: https://github.com/carlosgiralt/lens-kit
+      icon: external
+      variant: secondary
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## Components
+
+<CardGrid stagger>
+  <Card title="Carousel" icon="laptop">
+    A touch-ready, swipeable carousel with dot, arrow, and thumbnail navigation. Supports multiple visible slides at once.
+
+    [Explore Carousel →](./components/carousel/)
+  </Card>
+  <Card title="Gallery" icon="open-book">
+    A modal lightbox that auto-detects images, videos, and links. Combines carousel navigation with pan and zoom.
+
+    [Explore Gallery →](./components/gallery/)
+  </Card>
+  <Card title="Panzoom" icon="magnifier">
+    Pan, zoom, rotate, and flip any content with full touch, pinch, and mouse-wheel support.
+
+    [Explore Panzoom →](./components/panzoom/)
+  </Card>
+  <Card title="Getting Started" icon="rocket">
+    Install Lens Kit and use your first component in minutes.
+
+    [Read the guide →](./guides/example/)
+  </Card>
+</CardGrid>

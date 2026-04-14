@@ -1,0 +1,99 @@
+---
+title: Panzoom
+description: Pan, zoom, rotate, and flip any content with touch, pinch, and mouse-wheel support.
+---
+
+import DemoPanzoom from './DemoPanzoom.astro';
+
+`lk-panzoom` is a standalone Web Component that adds pan, zoom, rotation, and flip interactions to any content placed inside it. It supports mouse drag, mouse wheel, touch drag, and two-finger pinch-to-zoom out of the box.
+
+:::note
+`lk-panzoom` is used internally by `lk-gallery` to power the image manipulation inside the modal. You can also use it on its own to add zoom and pan to any element.
+:::
+
+## Basic Usage
+
+Wrap any content with `lk-panzoom`. The component fills its container, so give the host a defined size.
+
+```html
+<lk-panzoom style="width: 100%; height: 400px; display: block;">
+  <img src="https://picsum.photos/id/1018/1920/1080" style="max-width: 100%; max-height: 100%;" />
+</lk-panzoom>
+```
+
+<DemoPanzoom>
+  <img src="https://picsum.photos/id/1018/1920/1080" style="max-width: 90%; max-height: 90%; object-fit: contain;" />
+</DemoPanzoom>
+
+**Try it:** scroll to zoom, drag to pan.
+
+## Interactions
+
+| Interaction | Action |
+|---|---|
+| Mouse drag | Pan |
+| Mouse wheel | Zoom centered on cursor |
+| Touch drag (1 finger) | Pan |
+| Pinch (2 fingers) | Zoom |
+
+## Properties
+
+| Attribute | Type | Default | Description |
+|---|---|---|---|
+| `min-scale` | `number` | `1` | Minimum zoom level. Content cannot be zoomed out below this scale. |
+| `max-scale` | `number` | `5` | Maximum zoom level. Content cannot be zoomed in beyond this scale. |
+| `disabled` | `boolean` | `false` | Disables all interactions. Useful when the component is not the active slide. |
+
+## Methods
+
+Access these via a DOM reference to the element.
+
+| Method | Description |
+|---|---|
+| `zoomIn()` | Increase zoom by 1.5×. |
+| `zoomOut()` | Decrease zoom by 1.5×. |
+| `toggleOneToOne()` | Toggle between 1:1 and 2× pixel view. |
+| `rotateLeft()` | Rotate 90° counter-clockwise. |
+| `rotateRight()` | Rotate 90° clockwise. |
+| `toggleFlipX()` | Flip horizontally. |
+| `toggleFlipY()` | Flip vertically. |
+| `reset()` | Reset zoom, pan, rotation, and flips to their defaults. |
+
+```js
+const pz = document.querySelector('lk-panzoom');
+
+pz.zoomIn();
+pz.rotateRight();
+pz.reset();
+```
+
+## Programmatic Control
+
+You can build your own toolbar by calling methods on the element:
+
+```html
+<lk-panzoom id="pz" style="width: 100%; height: 400px; display: block;">
+  <img src="/photo.jpg" />
+</lk-panzoom>
+
+<div>
+  <button onclick="pz.zoomIn()">Zoom In</button>
+  <button onclick="pz.zoomOut()">Zoom Out</button>
+  <button onclick="pz.rotateLeft()">Rotate Left</button>
+  <button onclick="pz.rotateRight()">Rotate Right</button>
+  <button onclick="pz.toggleFlipX()">Flip H</button>
+  <button onclick="pz.reset()">Reset</button>
+</div>
+```
+
+## Disabled State
+
+Set `disabled` to prevent all interactions. The content is still visible but cannot be dragged or zoomed.
+
+```html
+<lk-panzoom disabled>
+  <img src="/photo.jpg" />
+</lk-panzoom>
+```
+
+This is how `lk-gallery` disables panzoom on inactive slides and on `html`/`video` type items.

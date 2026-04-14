@@ -1,9 +1,14 @@
 // @ts-check
 import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
+import { fileURLToPath, URL } from "node:url";
 
 // https://astro.build/config
 export default defineConfig({
+	site: "https://carlosgiralt.github.io",
+	base: "/",
+	// Use docs-dist/ to avoid colliding with the lib build output in dist/
+	outDir: "./docs-dist",
 	integrations: [
 		starlight({
 			title: "Lens Kit",
@@ -32,4 +37,11 @@ export default defineConfig({
 			],
 		}),
 	],
+	vite: {
+		resolve: {
+			alias: {
+				"@ui": fileURLToPath(new URL("./src/ui", import.meta.url)),
+			},
+		},
+	},
 });

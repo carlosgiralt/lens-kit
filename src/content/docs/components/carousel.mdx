@@ -1,0 +1,139 @@
+---
+title: Carousel
+description: A touch-ready, swipeable carousel with dot, arrow, and thumbnail navigation.
+---
+
+import DemoCarousel from './DemoCarousel.astro';
+
+`lk-carousel` is a swipeable carousel built as a standard Web Component. Any elements placed inside it become slides. It supports mouse drag, touch swipe, keyboard-style arrow navigation, and optional dot or thumbnail indicators.
+
+## Basic Usage
+
+Place any child elements inside `lk-carousel`. Each direct child becomes a slide.
+
+```html
+<lk-carousel>
+  <div>Slide 1</div>
+  <div>Slide 2</div>
+  <div>Slide 3</div>
+</lk-carousel>
+```
+
+<DemoCarousel>
+  <div style="background: #9333ea; display: flex; align-items:center; justify-content:center; color: white; height: 100%;">Slide 1</div>
+  <div style="background: #3b82f6; display: flex; align-items:center; justify-content:center; color: white; height: 100%;">Slide 2</div>
+  <div style="background: #22c55e; display: flex; align-items:center; justify-content:center; color: white; height: 100%;">Slide 3</div>
+</DemoCarousel>
+
+## Multiple Slides Per View
+
+Set `slide-width` to a fractional percentage to show several slides at once. For 3 slides, use `33.33`.
+
+```html
+<lk-carousel slide-width="33.33" show-dots="false">
+  <img src="https://picsum.photos/id/1018/400/300" />
+  <img src="https://picsum.photos/id/1015/400/300" />
+  <img src="https://picsum.photos/id/1043/400/300" />
+  <img src="https://picsum.photos/id/1019/400/300" />
+  <img src="https://picsum.photos/id/1020/400/300" />
+</lk-carousel>
+```
+
+<DemoCarousel slide-width="33.33" show-dots="false">
+  <img src="https://picsum.photos/id/1018/400/300" />
+  <img src="https://picsum.photos/id/1015/400/300" />
+  <img src="https://picsum.photos/id/1043/400/300" />
+  <img src="https://picsum.photos/id/1019/400/300" />
+  <img src="https://picsum.photos/id/1020/400/300" />
+</DemoCarousel>
+
+## Thumbnails
+
+Add `show-thumbnails` to render a clickable thumbnail strip below the carousel. Thumbnails are extracted automatically from `<img>` elements inside each slide.
+
+```html
+<lk-carousel show-thumbnails show-dots="false">
+  <img src="https://picsum.photos/id/1018/1920/1080" />
+  <img src="https://picsum.photos/id/1019/1920/1080" />
+  <img src="https://picsum.photos/id/1020/1920/1080" />
+</lk-carousel>
+```
+
+<DemoCarousel show-thumbnails show-dots="false">
+  <img src="https://picsum.photos/id/1018/1920/1080" />
+  <img src="https://picsum.photos/id/1019/1920/1080" />
+  <img src="https://picsum.photos/id/1020/1920/1080" />
+</DemoCarousel>
+
+## Properties
+
+| Attribute | Type | Default | Description |
+|---|---|---|---|
+| `slide-width` | `number` | `100` | Percentage width of each slide relative to the container. `33.33` shows 3 slides at once. |
+| `show-dots` | `boolean` | `true` | Show pagination dots below the carousel. |
+| `show-nav` | `boolean` | `true` | Show previous / next arrow buttons. Hidden automatically when there is only one slide. |
+| `show-thumbnails` | `boolean` | `false` | Render a clickable thumbnail strip. Thumbnails are sourced from `<img>` elements inside each slide. |
+| `overlay` | `boolean` | `false` | Position dots and thumbnails as an overlay at the bottom of the carousel instead of below it. |
+| `current-index` | `number` | `0` | The zero-based index of the currently visible slide. |
+
+## Django / Python Booleans
+
+When using server-rendered templates (like Django), attribute values arrive as strings. `lk-carousel` accepts Python-style boolean strings and coercion-friendly values:
+
+- truthy: `"True"`, `"true"`, `"1"`, empty attribute presence (`show-dots`)
+- falsy: `"False"`, `"false"`, `"0"`, `"off"`, `"no"`
+
+Always use kebab-case attribute names in HTML (`show-dots`, not `showDots`).
+
+```django
+<lk-carousel
+  show-dots="{{ show_dots }}"
+  show-nav="{{ show_nav }}"
+  show-thumbnails="{{ show_thumbnails }}"
+  overlay="{{ overlay }}"
+>
+  ...
+</lk-carousel>
+```
+
+## Methods
+
+Access these via a DOM reference to the element.
+
+| Method | Description |
+|---|---|
+| `goToNext()` | Advance to the next slide. No-op at the last slide. |
+| `goToPrev()` | Go back to the previous slide. No-op at the first slide. |
+| `goToIndex(index)` | Jump to a specific slide by zero-based index. |
+
+```js
+const carousel = document.querySelector('lk-carousel');
+carousel.goToNext();
+carousel.goToIndex(2);
+```
+
+## Events
+
+| Event | Detail | Description |
+|---|---|---|
+| `change` | `{ index: number }` | Fired whenever the active slide changes, including after swipe, drag, dot click, or programmatic navigation. |
+
+```js
+document.querySelector('lk-carousel').addEventListener('change', (e) => {
+  console.log('Active slide:', e.detail.index);
+});
+```
+
+## CSS Custom Properties
+
+| Property | Default | Description |
+|---|---|---|
+| `--carousel-aspect-ratio` | `16/9` | Aspect ratio applied to `<img>` elements slotted into the carousel. |
+| `--carousel-image-fit` | `cover` | `object-fit` value for slotted `<img>` elements. |
+
+```css
+lk-carousel {
+  --carousel-aspect-ratio: 4/3;
+  --carousel-image-fit: contain;
+}
+```

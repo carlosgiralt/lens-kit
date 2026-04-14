@@ -12,6 +12,7 @@ export default defineConfig(({ mode }) => ({
     }
   },
   build: mode === 'lib' ? {
+    copyPublicDir: false,
     lib: {
       entry: 'src/ui/index.ts',
       name: 'lens-kit',
