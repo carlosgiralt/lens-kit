@@ -11,7 +11,9 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build --mode lib",
+    "build": "tsc -p tsconfig.lib.json && vite build --mode lib",
+    "sandbox:build": "vite build",
+    "sandbox:preview": "vite build && vite preview",
     "preview": "vite build && vite preview",
     "docs:dev": "astro dev",
     "docs:start": "astro dev",

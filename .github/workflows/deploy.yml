@@ -1,4 +1,4 @@
-name: Deploy sandbox to GitHub Pages
+name: Build and deploy to GitHub Pages
 
 on:
   push:
@@ -10,8 +10,6 @@ permissions:
   pages: write
   id-token: write
 
-# Only one Pages deployment runs at a time; in-progress runs are not cancelled
-# so a deploy is never left half-finished.
 concurrency:
   group: pages
   cancel-in-progress: false
@@ -34,9 +32,28 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # Step 1 — build the library (UMD + ESM bundles)
+      # Outputs: dist/lens-kit.umd.js  dist/lens-kit.es.js
+      - name: Build library
+        run: pnpm build
+
+      # Stash the bundles before the sandbox build wipes dist/
+      - name: Stash library bundles
+        run: mkdir -p /tmp/lib-dist && cp dist/lens-kit.*.js /tmp/lib-dist/
+
+      # Step 2 — build the sandbox (index.html dev demo)
+      # Vite clears dist/ before writing; that's why we stashed above.
       - name: Build sandbox
         run: pnpm exec vite build
-        # No --mode flag → default Vite build bundles index.html (not the lib build)
+
+      # Step 3 — merge: put the library bundles back into dist/
+      # Final dist/ layout:
+      #   dist/index.html              → https://<user>.github.io/lens-kit/
+      #   dist/assets/…                → sandbox JS/CSS chunks
+      #   dist/lens-kit.umd.js         → CDN UMD bundle
+      #   dist/lens-kit.es.js          → CDN ESM bundle
+      - name: Merge library bundles into dist
+        run: cp /tmp/lib-dist/lens-kit.*.js dist/
 
       - uses: actions/upload-pages-artifact@v3
         with:
