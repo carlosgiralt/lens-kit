@@ -12,6 +12,7 @@ export default defineConfig({
 	integrations: [
 		starlight({
 			title: "Lens Kit",
+			pagefind: false,
 			social: [
 				{
 					icon: "github",
