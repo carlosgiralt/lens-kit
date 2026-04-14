@@ -33,7 +33,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Lint
-        run: pnpm check
+        run: pnpm biome ci ./src/ui
 
       # Step 1 — build the library (UMD + ESM bundles)
       # Outputs: dist/lens-kit.umd.js  dist/lens-kit.es.js
@@ -49,6 +49,9 @@ jobs:
       # they are accessible at https://carlosgiralt.github.io/lens-kit/lens-kit.*.js
       - name: Add library bundles to docs output
         run: cp dist/lens-kit.*.js docs-dist/
+
+      - name: Disable Jekyll
+        run: touch docs-dist/.nojekyll
 
       - uses: actions/upload-pages-artifact@v3
         with:

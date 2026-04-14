@@ -1,13 +1,13 @@
-import { LitElement, html, unsafeCSS } from "lit";
-import { classMap } from "lit/directives/class-map.js";
+import { parseBooleanAttribute } from "@ui/utils/boolean-attribute";
+import { html, LitElement, unsafeCSS } from "lit";
 import {
 	customElement,
 	property,
-	state,
 	query,
 	queryAssignedElements,
+	state,
 } from "lit/decorators.js";
-import { parseBooleanAttribute } from "@ui/utils/boolean-attribute";
+import { classMap } from "lit/directives/class-map.js";
 import { iconChevronLeft, iconChevronRight } from "../utils/icons.js";
 import styles from "./lk-carousel.css?inline";
 

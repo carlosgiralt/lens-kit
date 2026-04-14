@@ -1,5 +1,5 @@
-import { LitElement, html, unsafeCSS } from "lit";
-import { customElement, property, state, query } from "lit/decorators.js";
+import { html, LitElement, unsafeCSS } from "lit";
+import { customElement, property, query, state } from "lit/decorators.js";
 import styles from "./lk-panzoom.css?inline";
 
 @customElement("lk-panzoom")

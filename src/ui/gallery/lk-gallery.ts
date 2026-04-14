@@ -1,11 +1,11 @@
-import { LitElement, html, unsafeCSS } from "lit";
-import { customElement, property, state, query } from "lit/decorators.js";
-import { unsafeHTML } from "lit/directives/unsafe-html.js";
-import styles from "./lk-gallery.css?inline";
 import { parseBooleanAttribute } from "@ui/utils/boolean-attribute";
-import { SlideshowController } from "./controllers/slideshow.js";
+import { html, LitElement, unsafeCSS } from "lit";
+import { customElement, property, query, state } from "lit/decorators.js";
+import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import { FullscreenController } from "./controllers/fullscreen.js";
 import { KeyboardController } from "./controllers/keyboard.js";
+import { SlideshowController } from "./controllers/slideshow.js";
+import styles from "./lk-gallery.css?inline";
 
 import "@ui/carousel/lk-carousel";
 import "@ui/panzoom/lk-panzoom";

@@ -2,20 +2,20 @@
 import { html } from "lit";
 import { unsafeSVG } from "lit/directives/unsafe-svg.js";
 import {
-	ZoomIn,
-	ZoomOut,
-	Play,
-	Pause,
-	Maximize2,
-	Minimize2,
-	X,
-	RotateCcw,
-	RotateCw,
-	RefreshCw,
-	FlipHorizontal2,
-	FlipVertical2,
 	ChevronLeft,
 	ChevronRight,
+	FlipHorizontal2,
+	FlipVertical2,
+	Maximize2,
+	Minimize2,
+	Pause,
+	Play,
+	RefreshCw,
+	RotateCcw,
+	RotateCw,
+	X,
+	ZoomIn,
+	ZoomOut,
 } from "lucide";
 
 // lucide does not export its IconNode type; define a compatible local type.

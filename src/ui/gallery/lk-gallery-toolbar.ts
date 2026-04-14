@@ -1,19 +1,19 @@
-import { LitElement, html, css } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import {
-	iconZoomIn,
-	iconZoomOut,
-	iconPlay,
-	iconPause,
-	iconMaximize,
-	iconMinimize,
 	iconClose,
-	iconRotateCcw,
-	iconRotateCw,
-	iconRefreshCw,
 	iconFlipH,
 	iconFlipV,
+	iconMaximize,
+	iconMinimize,
 	iconOneToOne,
+	iconPause,
+	iconPlay,
+	iconRefreshCw,
+	iconRotateCcw,
+	iconRotateCw,
+	iconZoomIn,
+	iconZoomOut,
 } from "../utils/icons.js";
 
 const PANZOOM_TOOLS = new Set([
