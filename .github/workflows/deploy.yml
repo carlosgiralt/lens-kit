@@ -32,32 +32,27 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Lint
+        run: pnpm check
+
       # Step 1 — build the library (UMD + ESM bundles)
       # Outputs: dist/lens-kit.umd.js  dist/lens-kit.es.js
       - name: Build library
         run: pnpm build
 
-      # Stash the bundles before the sandbox build wipes dist/
-      - name: Stash library bundles
-        run: mkdir -p /tmp/lib-dist && cp dist/lens-kit.*.js /tmp/lib-dist/
+      # Step 2 — build the Astro documentation site
+      # Outputs to docs-dist/ (base: /lens-kit, site: https://carlosgiralt.github.io)
+      - name: Build docs
+        run: pnpm docs:build
 
-      # Step 2 — build the sandbox (index.html dev demo)
-      # Vite clears dist/ before writing; that's why we stashed above.
-      - name: Build sandbox
-        run: pnpm exec vite build
-
-      # Step 3 — merge: put the library bundles back into dist/
-      # Final dist/ layout:
-      #   dist/index.html              → https://<user>.github.io/lens-kit/
-      #   dist/assets/…                → sandbox JS/CSS chunks
-      #   dist/lens-kit.umd.js         → CDN UMD bundle
-      #   dist/lens-kit.es.js          → CDN ESM bundle
-      - name: Merge library bundles into dist
-        run: cp /tmp/lib-dist/lens-kit.*.js dist/
+      # Step 3 — place the library bundles at the root of the docs output so
+      # they are accessible at https://carlosgiralt.github.io/lens-kit/lens-kit.*.js
+      - name: Add library bundles to docs output
+        run: cp dist/lens-kit.*.js docs-dist/
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: docs-dist
 
   deploy:
     needs: build
