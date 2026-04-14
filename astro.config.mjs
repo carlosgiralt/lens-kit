@@ -6,7 +6,7 @@ import { fileURLToPath, URL } from "node:url";
 // https://astro.build/config
 export default defineConfig({
 	site: "https://carlosgiralt.github.io",
-	base: "/",
+	base: "/lens-kit",
 	// Use docs-dist/ to avoid colliding with the lib build output in dist/
 	outDir: "./docs-dist",
 	integrations: [
