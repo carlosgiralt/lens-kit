@@ -5,7 +5,75 @@
     <link rel="icon" type="image/svg+xml" href="/src/assets/lens-kit.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Lens Kit — Dev</title>
-    <script type="module" src="/src/ui/index.ts"></script>
+    <script src="https://carlosgiralt.github.io/lens-kit/lens-kit.umd.js"></script>
+    <script>
+      const { GalleryToolbar } = window['lens-kit'];
+
+      // Custom "download" tool — plain DOM, no Lit import required
+      GalleryToolbar.registerToolElement('download', (ctx) => {
+        const btn = document.createElement('button');
+        btn.className = 'action-btn';
+        btn.setAttribute('aria-label', 'Download image');
+        btn.part.add('action-button', 'action-download');
+        btn.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+        `;
+        btn.addEventListener('click', () =>
+          ctx.dispatch('download', { index: ctx.currentIndex })
+        );
+        return btn;
+      });
+
+      // Custom "info" tool — alerts the current image URL
+      GalleryToolbar.registerToolElement('info', (ctx) => {
+        const btn = document.createElement('button');
+        btn.className = 'action-btn';
+        btn.setAttribute('aria-label', 'Image URL');
+        btn.part.add('action-button', 'action-info');
+        btn.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+        `;
+        btn.addEventListener('click', () =>
+          ctx.dispatch('info', { index: ctx.currentIndex })
+        );
+        return btn;
+      });
+
+      // Handle both custom actions once the DOM is ready
+      document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('gallery-custom-action').addEventListener('action', (e) => {
+          if (e.detail.action !== 'download') return;
+          const gallery = e.currentTarget;
+          const src = gallery.items?.[e.detail.index]?.src;
+          if (!src) return;
+          const a = document.createElement('a');
+          a.href = src;
+          a.download = src.split('/').pop() ?? 'image';
+          a.target = '_blank';
+          a.rel = 'noopener noreferrer';
+          a.click();
+        });
+
+        document.getElementById('gallery-info-action').addEventListener('action', (e) => {
+          if (e.detail.action !== 'info') return;
+          const gallery = e.currentTarget;
+          const src = gallery.items?.[e.detail.index]?.src;
+          if (src) alert(src);
+        });
+      });
+    </script>
     <style>
       *, *::before, *::after { box-sizing: border-box; }
 
@@ -239,6 +307,31 @@
             <img src="https://picsum.photos/id/1018/1920/1080" data-caption="Beautiful mountains" />
             <img src="https://picsum.photos/id/1015/1920/1080" data-caption="River landscape" />
             <img src="https://picsum.photos/id/1043/1920/1080" data-caption="Forest path" />
+          </lk-gallery>
+        </div>
+      </div>
+
+      <!-- Custom toolbar action — registerToolElement (no Lit) -->
+      <div class="example">
+        <span class="example-label">&lt;lk-gallery toolbar="download, |, zoom, play, fullscreen, close"&gt; — custom action via registerToolElement</span>
+        <div class="demo-box gallery-wrap">
+          <lk-gallery id="gallery-custom-action" layout="grid" toolbar="download, |, zoom, play, fullscreen, close">
+            <img src="https://picsum.photos/id/1018/1920/1080" alt="Mountains" data-caption="Beautiful mountains" />
+            <img src="https://picsum.photos/id/1015/1920/1080" alt="River" data-caption="River landscape" />
+            <img src="https://picsum.photos/id/1043/1920/1080" alt="Forest" data-caption="Forest path" />
+            <img src="https://picsum.photos/id/1019/1920/1080" alt="Seascape" data-caption="Seascape" />
+          </lk-gallery>
+        </div>
+      </div>
+
+      <!-- Custom toolbar action — info alert -->
+      <div class="example">
+        <span class="example-label">&lt;lk-gallery toolbar="info, |, zoom, fullscreen, close"&gt; — custom action alert with image URL</span>
+        <div class="demo-box gallery-wrap">
+          <lk-gallery id="gallery-info-action" layout="grid" toolbar="info, |, zoom, fullscreen, close">
+            <img src="https://picsum.photos/id/1024/1920/1080" alt="Rocks" data-caption="Rocky coast" />
+            <img src="https://picsum.photos/id/1025/1920/1080" alt="Deer" data-caption="Deer in the wild" />
+            <img src="https://picsum.photos/id/1026/1920/1080" alt="Waterfall" data-caption="Waterfall" />
           </lk-gallery>
         </div>
       </div>
