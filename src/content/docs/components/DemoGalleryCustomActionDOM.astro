@@ -1,0 +1,58 @@
+---
+---
+<script>
+  import '@ui/gallery/lk-gallery';
+  import { GalleryToolbar } from '@ui/gallery/lk-gallery-toolbar';
+
+  // No Lit import — plain DOM only
+  GalleryToolbar.registerToolElement('download-dom', (ctx) => {
+    const btn = document.createElement('button');
+    btn.className = 'action-btn';
+    btn.setAttribute('aria-label', 'Download image');
+    btn.part.add('action-button', 'action-download-dom');
+
+    btn.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="7 10 12 15 17 10"/>
+        <line x1="12" y1="15" x2="12" y2="3"/>
+      </svg>
+    `;
+
+    btn.addEventListener('click', () =>
+      ctx.dispatch('download-dom', { index: ctx.currentIndex })
+    );
+
+    return btn;
+  });
+
+  document.querySelectorAll<HTMLElement>('lk-gallery[data-demo-dom]').forEach((gallery) => {
+    gallery.addEventListener('action', (e) => {
+      const { action, index } = (e as CustomEvent<{ action: string; index: number }>).detail;
+      if (action !== 'download-dom') return;
+
+      const items = (gallery as unknown as { items: Array<{ src: string }> }).items;
+      const src = items?.[index]?.src;
+      if (!src) return;
+
+      const anchor = document.createElement('a');
+      anchor.href = src;
+      anchor.download = src.split('/').pop() ?? 'image';
+      anchor.target = '_blank';
+      anchor.rel = 'noopener noreferrer';
+      anchor.click();
+    });
+  });
+</script>
+
+<div style="border: 1px solid #eee; border-radius: 8px; padding: 2rem; margin-top: 1rem;">
+  <lk-gallery
+    data-demo-dom
+    toolbar="download-dom, |, zoom, play, fullscreen, close"
+    layout="grid"
+  >
+    <slot />
+  </lk-gallery>
+</div>

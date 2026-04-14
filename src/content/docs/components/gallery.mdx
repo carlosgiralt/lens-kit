@@ -4,6 +4,8 @@ description: A modal lightbox that combines carousel navigation with pan and zoo
 ---
 
 import DemoGallery from './DemoGallery.astro';
+import DemoGalleryCustomAction from './DemoGalleryCustomAction.astro';
+import DemoGalleryCustomActionDOM from './DemoGalleryCustomActionDOM.astro';
 
 `lk-gallery` is a modal lightbox that wraps any trigger elements — images, videos, or links — and opens them in a full-screen modal with carousel navigation and pan/zoom support powered by `lk-panzoom`.
 
@@ -132,6 +134,145 @@ Control which actions appear in the modal header using the `toolbar` attribute. 
   <img src="https://picsum.photos/id/1018/1920/1080" />
   <img src="https://picsum.photos/id/1015/1920/1080" />
 </DemoGallery>
+
+## Custom Toolbar Actions
+
+Register additional toolbar buttons via `GalleryToolbar.registerTool(name, renderer)`. The renderer receives a live context object and returns a Lit `html` template — the button is rendered inline with the built-in tools and fires the same `action` CustomEvent.
+
+The example below adds a **Download** button that saves the currently visible image.
+
+```js
+import { GalleryToolbar } from 'lens-kit';
+import { html } from 'lit';
+
+const iconDownload = html`
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+       fill="none" stroke="currentColor" stroke-width="2"
+       stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+    <polyline points="7 10 12 15 17 10"/>
+    <line x1="12" y1="15" x2="12" y2="3"/>
+  </svg>
+`;
+
+// Call once before the component renders (module scope is fine)
+GalleryToolbar.registerTool('download', (ctx) => html`
+  <button
+    part="action-button action-download"
+    class="action-btn"
+    aria-label="Download image"
+    @click=${() => ctx.dispatch('download', { index: ctx.currentIndex })}
+  >${iconDownload}</button>
+`);
+```
+
+Use the registered name in the `toolbar` attribute like any built-in token:
+
+```html
+<lk-gallery toolbar="download, |, zoom, play, fullscreen, close">
+  <img src="photo-1.jpg" />
+  <img src="photo-2.jpg" />
+</lk-gallery>
+```
+
+Listen for the `action` event on `lk-gallery` to handle it:
+
+```js
+const gallery = document.querySelector('lk-gallery');
+
+gallery.addEventListener('action', (e) => {
+  const { action, index } = e.detail;
+  if (action !== 'download') return;
+
+  const src = gallery.items[index]?.src;
+  if (!src) return;
+
+  const a = document.createElement('a');
+  a.href = src;
+  a.download = src.split('/').pop() ?? 'image';
+  a.click();
+});
+```
+
+<DemoGalleryCustomAction>
+  <img src="https://picsum.photos/id/1018/1920/1080" data-caption="Beautiful mountains" />
+  <img src="https://picsum.photos/id/1015/1920/1080" data-caption="River landscape" />
+  <img src="https://picsum.photos/id/1043/1920/1080" data-caption="Forest path" />
+</DemoGalleryCustomAction>
+
+### Without Lit (plain DOM API)
+
+If your project doesn't use Lit, call `GalleryToolbar.registerToolElement` instead. Pass a factory that creates and returns a plain `HTMLElement` — no tagged-template syntax required.
+
+```js
+import { GalleryToolbar } from 'lens-kit';
+
+GalleryToolbar.registerToolElement('download', (ctx) => {
+  const btn = document.createElement('button');
+
+  // Apply the same CSS class used by built-in buttons
+  btn.className = 'action-btn';
+  btn.setAttribute('aria-label', 'Download image');
+
+  // Use CSS ::part() for targeted styling: part="action-button action-download"
+  btn.part.add('action-button', 'action-download');
+
+  btn.innerHTML = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+         fill="none" stroke="currentColor" stroke-width="2"
+         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+      <polyline points="7 10 12 15 17 10"/>
+      <line x1="12" y1="15" x2="12" y2="3"/>
+    </svg>
+  `;
+
+  // ctx.dispatch fires the same "action" event lk-gallery already listens to
+  btn.addEventListener('click', () =>
+    ctx.dispatch('download', { index: ctx.currentIndex })
+  );
+
+  return btn;
+});
+```
+
+The event handling side is identical — listen for `action` on `lk-gallery`:
+
+```js
+document.querySelector('lk-gallery').addEventListener('action', (e) => {
+  if (e.detail.action !== 'download') return;
+  const src = e.target.items[e.detail.index]?.src;
+  if (!src) return;
+  Object.assign(document.createElement('a'), {
+    href: src,
+    download: src.split('/').pop() ?? 'image',
+  }).click();
+});
+```
+
+<DemoGalleryCustomActionDOM>
+  <img src="https://picsum.photos/id/1018/1920/1080" data-caption="Beautiful mountains" />
+  <img src="https://picsum.photos/id/1015/1920/1080" data-caption="River landscape" />
+  <img src="https://picsum.photos/id/1043/1920/1080" data-caption="Forest path" />
+</DemoGalleryCustomActionDOM>
+
+:::note
+The factory is called on every render cycle (e.g., when the slide changes or play state toggles). Event listeners attached inside the factory are re-registered on each call — this is intentional and has no meaningful overhead for toolbar buttons.
+:::
+
+### Renderer context
+
+The second argument to `registerTool` receives a `CustomToolContext` object:
+
+| Field | Type | Description |
+|---|---|---|
+| `host` | `GalleryToolbar` | Reference to the toolbar element |
+| `currentIndex` | `number` | 0-based index of the current slide |
+| `total` | `number` | Total number of slides |
+| `isPlaying` | `boolean` | Whether slideshow auto-play is active |
+| `isFullscreen` | `boolean` | Whether the gallery is in fullscreen mode |
+| `isHtmlSlide` | `boolean` | Whether the current slide is HTML/video — custom tools are **never** auto-hidden by this flag, unlike built-in panzoom tools |
+| `dispatch(action, detail?)` | `function` | Fires the standard `action` event; `detail` is merged into `event.detail` |
 
 ## Native Video Support
 
