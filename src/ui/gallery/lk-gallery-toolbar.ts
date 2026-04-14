@@ -1,4 +1,4 @@
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, type TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import {
 	iconClose,
@@ -15,6 +15,57 @@ import {
 	iconZoomIn,
 	iconZoomOut,
 } from "../utils/icons.js";
+
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
+
+/**
+ * Context passed to every custom tool renderer so it can react to live
+ * gallery state without needing a reference to the host element.
+ */
+export interface CustomToolContext {
+	/** The toolbar host element — use sparingly; prefer the fields below. */
+	host: GalleryToolbar;
+	/** 0-based index of the currently visible slide. */
+	currentIndex: number;
+	/** Total number of slides. */
+	total: number;
+	/** Whether the slideshow auto-play is active. */
+	isPlaying: boolean;
+	/** Whether the gallery is in fullscreen mode. */
+	isFullscreen: boolean;
+	/**
+	 * Whether the current slide is an HTML/video slide.
+	 * Built-in panzoom tools are hidden when this is true.
+	 * Custom tools registered via {@link GalleryToolbar.registerTool} are
+	 * NEVER filtered — handle this flag yourself if your tool is panzoom-dependent.
+	 */
+	isHtmlSlide: boolean;
+	/**
+	 * Fire the standard `action` CustomEvent on the toolbar host.
+	 * The event bubbles and is composed, so `lk-gallery` will receive it.
+	 *
+	 * @param action - Arbitrary string identifier for the action.
+	 * @param detail - Optional extra data merged into `event.detail`.
+	 */
+	dispatch(action: string, detail?: Record<string, unknown>): void;
+}
+
+/**
+ * A function that returns a Lit `html` template for a custom toolbar tool.
+ * Return `html\`\`` to conditionally hide the tool.
+ *
+ * For non-Lit environments, use {@link GalleryToolbar.registerToolElement}
+ * instead — it accepts a plain DOM `HTMLElement` factory.
+ */
+export type CustomToolRenderer = (
+	ctx: CustomToolContext,
+) => TemplateResult | Node;
+
+// ---------------------------------------------------------------------------
+// Constants
+// ---------------------------------------------------------------------------
 
 const PANZOOM_TOOLS = new Set([
 	"zoom",
@@ -33,8 +84,92 @@ const PANZOOM_TOOLS = new Set([
 	"reset",
 ]);
 
+// ---------------------------------------------------------------------------
+// Component
+// ---------------------------------------------------------------------------
+
 @customElement("lk-gallery-toolbar")
 export class GalleryToolbar extends LitElement {
+	// -------------------------------------------------------------------------
+	// Static custom-tool registry
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Global registry of custom tool renderers, keyed by the tool name used
+	 * in the `toolbar` attribute string (case-insensitive, trimmed).
+	 *
+	 * Populated via {@link GalleryToolbar.registerTool}.
+	 *
+	 * @example
+	 * ```ts
+	 * GalleryToolbar.registerTool("share", ({ dispatch }) => html`
+	 *   <button class="action-btn" @click=${() => dispatch("share")}>
+	 *     Share
+	 *   </button>
+	 * `);
+	 * ```
+	 */
+	static readonly customRenderers: Map<string, CustomToolRenderer> = new Map();
+
+	/**
+	 * Register a renderer for a custom tool name.
+	 *
+	 * - Call this **before** the component renders (top-level module scope is fine).
+	 * - The `name` is normalised to lowercase and trimmed, matching the toolbar
+	 *   string parsing behaviour.
+	 * - Registering the same name twice overwrites the previous renderer —
+	 *   useful for overriding built-in tools in advanced scenarios.
+	 *
+	 * **Requires Lit.** If you are not using Lit, use {@link registerToolElement}
+	 * instead.
+	 *
+	 * @param name     Tool name as it appears in the `toolbar` attribute string.
+	 * @param renderer Function that receives a {@link CustomToolContext} and
+	 *                 returns a Lit `TemplateResult` or a DOM `Node`.
+	 */
+	static registerTool(name: string, renderer: CustomToolRenderer): void {
+		GalleryToolbar.customRenderers.set(name.trim().toLowerCase(), renderer);
+	}
+
+	/**
+	 * Register a custom tool using a plain DOM element factory — **no Lit required**.
+	 *
+	 * The factory is called on every render cycle with a fresh {@link CustomToolContext}
+	 * snapshot, and the returned element replaces the previous one. Attach event
+	 * listeners inside the factory; they will be re-registered on each render.
+	 *
+	 * Use `ctx.dispatch(action, detail?)` to fire the standard `action` CustomEvent
+	 * that `lk-gallery` already listens for — no extra wiring needed.
+	 *
+	 * @param name    Tool name as it appears in the `toolbar` attribute string.
+	 * @param factory Function that receives a {@link CustomToolContext} and returns
+	 *                an `HTMLElement`.
+	 *
+	 * @example Vanilla JS:
+	 * ```js
+	 * GalleryToolbar.registerToolElement('download', (ctx) => {
+	 *   const btn = document.createElement('button');
+	 *   btn.className = 'action-btn';
+	 *   btn.setAttribute('aria-label', 'Download');
+	 *   btn.innerHTML = '<svg ...>...</svg>';
+	 *   btn.addEventListener('click', () =>
+	 *     ctx.dispatch('download', { index: ctx.currentIndex })
+	 *   );
+	 *   return btn;
+	 * });
+	 * ```
+	 */
+	static registerToolElement(
+		name: string,
+		factory: (ctx: CustomToolContext) => HTMLElement,
+	): void {
+		GalleryToolbar.customRenderers.set(name.trim().toLowerCase(), factory);
+	}
+
+	// -------------------------------------------------------------------------
+	// Styles
+	// -------------------------------------------------------------------------
+
 	static styles = css`
     :host {
       position: absolute;
@@ -91,7 +226,19 @@ export class GalleryToolbar extends LitElement {
       outline: var(--gallery-focus-outline, 2px solid #ffffff);
       outline-offset: 2px;
     }
+    /*
+     * Slotted custom actions: give authors a way to style their slotted
+     * buttons consistently with built-in buttons by targeting the slot
+     * itself. Authors can also use the CSS custom properties above.
+     */
+    ::slotted([slot="actions-end"]) {
+      display: contents;
+    }
   `;
+
+	// -------------------------------------------------------------------------
+	// Properties
+	// -------------------------------------------------------------------------
 
 	@property({ type: String }) toolbar = "zoom, play, fullscreen, close";
 	@property({ type: Number }) currentIndex = 0;
@@ -104,20 +251,63 @@ export class GalleryToolbar extends LitElement {
 		.split(",")
 		.map((t) => t.trim().toLowerCase());
 
+	// -------------------------------------------------------------------------
+	// Lifecycle
+	// -------------------------------------------------------------------------
+
 	protected willUpdate(changedProperties: Map<string, unknown>) {
 		if (changedProperties.has("toolbar")) {
 			this.tools = this.toolbar.split(",").map((t) => t.trim().toLowerCase());
 		}
 	}
 
-	private dispatch(action: string) {
+	// -------------------------------------------------------------------------
+	// Public API
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Dispatch the standard `action` CustomEvent from the toolbar host.
+	 *
+	 * This is the same event that built-in buttons fire, so `lk-gallery`'s
+	 * `@action` listener will receive it without any extra wiring.
+	 *
+	 * Slotted buttons in the `"actions-end"` slot should call this method via
+	 * a reference to the toolbar element, or use the `lk-toolbar-action` event
+	 * helper below.
+	 *
+	 * @param action - Arbitrary action identifier string.
+	 * @param detail - Optional extra data merged into `event.detail`.
+	 *
+	 * @example Plain HTML (slot approach):
+	 * ```html
+	 * <lk-gallery-toolbar id="tb">
+	 *   <button slot="actions-end"
+	 *           onclick="document.getElementById('tb').dispatchAction('share')">
+	 *     Share
+	 *   </button>
+	 * </lk-gallery-toolbar>
+	 * ```
+	 */
+	public dispatchAction(
+		action: string,
+		detail: Record<string, unknown> = {},
+	): void {
 		this.dispatchEvent(
 			new CustomEvent("action", {
-				detail: { action },
+				detail: { action, ...detail },
 				bubbles: true,
 				composed: true,
 			}),
 		);
+	}
+
+	// -------------------------------------------------------------------------
+	// Private helpers
+	// -------------------------------------------------------------------------
+
+	/** Internal dispatch used by built-in buttons. */
+	private dispatch(action: string) {
+		this.dispatchAction(action);
 	}
 
 	private btn(name: string, icon: unknown, label: string) {
@@ -131,7 +321,23 @@ export class GalleryToolbar extends LitElement {
     `;
 	}
 
-	private renderTool(tool: string) {
+	/** Build the {@link CustomToolContext} passed to every registered renderer. */
+	private buildContext(): CustomToolContext {
+		return {
+			host: this,
+			currentIndex: this.currentIndex,
+			total: this.total,
+			isPlaying: this.isPlaying,
+			isFullscreen: this.isFullscreen,
+			isHtmlSlide: this.isHtmlSlide,
+			dispatch: (action, detail) => this.dispatchAction(action, detail),
+		};
+	}
+
+	private renderTool(tool: string): TemplateResult | Node {
+		// Built-in panzoom tools are hidden when the current slide is HTML/video.
+		// Custom tools in the registry are deliberately NOT subject to this filter —
+		// each renderer receives `isHtmlSlide` in its context and decides for itself.
 		if (this.isHtmlSlide && PANZOOM_TOOLS.has(tool)) return html``;
 
 		switch (tool) {
@@ -176,10 +382,28 @@ export class GalleryToolbar extends LitElement {
 			case "|":
 			case "divider":
 				return html`<div part="toolbar-divider" class="toolbar-divider"></div>`;
-			default:
+			default: {
+				// Consult the custom renderer registry before giving up.
+				const renderer = GalleryToolbar.customRenderers.get(tool);
+				if (renderer) {
+					return renderer(this.buildContext());
+				}
+				// Unknown tool name — warn in development to aid debugging.
+				if (process.env.NODE_ENV !== "production") {
+					console.warn(
+						`[lk-gallery-toolbar] Unknown tool "${tool}". ` +
+							`Register a renderer with GalleryToolbar.registerTool("${tool}", renderer) ` +
+							`or add it to the "actions-end" slot.`,
+					);
+				}
 				return html``;
+			}
 		}
 	}
+
+	// -------------------------------------------------------------------------
+	// Render
+	// -------------------------------------------------------------------------
 
 	render() {
 		return html`
@@ -190,6 +414,13 @@ export class GalleryToolbar extends LitElement {
 			}
       <div part="toolbar-actions" class="toolbar-actions">
         ${this.tools.map((tool) => this.renderTool(tool))}
+        <!--
+          Slot for declarative custom actions.
+          Slotted elements are appended after built-in tools.
+          Use the host's dispatchAction() method to fire the standard "action"
+          event, or dispatch a plain CustomEvent that bubbles + composed.
+        -->
+        <slot name="actions-end"></slot>
       </div>
     `;
 	}
