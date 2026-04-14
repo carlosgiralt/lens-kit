@@ -18,6 +18,16 @@ export interface galleryItem {
 	caption?: string;
 }
 
+type CarouselElement = HTMLElement & {
+	goToNext?: () => void;
+	goToPrev?: () => void;
+	goToIndex?: (i: number) => void;
+};
+
+type PanzoomElement = HTMLElement & {
+	reset?: () => void;
+};
+
 // Panzoom action name → lk-panzoom method name
 const PANZOOM_METHOD: Record<string, string> = {
 	"zoom-in": "zoomIn",
@@ -210,7 +220,9 @@ export class Gallery extends LitElement {
 
 	private onKeyDown = (e: KeyboardEvent) => {
 		if (!this.open) return;
-		const carousel = this.shadowRoot?.querySelector("lk-carousel") as any;
+		const carousel = this.shadowRoot?.querySelector(
+			"lk-carousel",
+		) as CarouselElement | null;
 		if (!carousel) return;
 		if (
 			e.key === "ArrowRight" &&
@@ -229,7 +241,9 @@ export class Gallery extends LitElement {
 		);
 		document.exitFullscreen().catch(() => {});
 		this.keyboard.detach();
-		this.shadowRoot?.querySelectorAll("video").forEach((v) => v.pause());
+		this.shadowRoot?.querySelectorAll("video").forEach((v) => {
+			v.pause();
+		});
 	}
 
 	private onDialogCancel = (e: Event) => {
@@ -244,7 +258,8 @@ export class Gallery extends LitElement {
 	private handleCarouselChange = (e: CustomEvent) => {
 		this.currentSlideIndex = e.detail.index;
 		this.shadowRoot?.querySelectorAll("lk-panzoom").forEach((pz) => {
-			if (typeof (pz as any).reset === "function") (pz as any).reset();
+			const typed = pz as PanzoomElement;
+			if (typeof typed.reset === "function") (typed.reset as () => void)();
 		});
 	};
 
@@ -253,16 +268,18 @@ export class Gallery extends LitElement {
 		const slides = Array.from(
 			this.shadowRoot?.querySelectorAll(".slide-content") ?? [],
 		);
-		const pz = slides[this.currentSlideIndex]?.querySelector(
-			"lk-panzoom",
-		) as any;
-		if (pz && typeof pz[method] === "function") {
-			pz[method]();
+		const el = slides[this.currentSlideIndex]?.querySelector("lk-panzoom");
+		if (!el) return;
+		const pz = el as unknown as Record<string, unknown>;
+		if (typeof pz[method] === "function") {
+			(pz[method] as () => void)();
 		}
 	}
 
 	private advanceSlide() {
-		const carousel = this.shadowRoot?.querySelector("lk-carousel") as any;
+		const carousel = this.shadowRoot?.querySelector(
+			"lk-carousel",
+		) as CarouselElement | null;
 		if (!carousel) return;
 		if (this.currentSlideIndex >= this.items.length - 1) {
 			carousel.goToIndex?.(0);
