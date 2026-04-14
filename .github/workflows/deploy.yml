@@ -50,6 +50,11 @@ jobs:
       - name: Add library bundles to docs output
         run: cp dist/lens-kit.*.js docs-dist/
 
+      # Step 4 — publish the dev sandbox as /sandbox.html
+      # index.html loads everything from the CDN UMD, so no extra Vite build needed.
+      - name: Add sandbox to docs output
+        run: cp index.html docs-dist/sandbox.html
+
       - name: Disable Jekyll
         run: touch docs-dist/.nojekyll
 
