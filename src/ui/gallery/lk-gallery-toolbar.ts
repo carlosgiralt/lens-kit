@@ -389,7 +389,7 @@ export class GalleryToolbar extends LitElement {
 					return renderer(this.buildContext());
 				}
 				// Unknown tool name — warn in development to aid debugging.
-				if (process.env.NODE_ENV !== "production") {
+				if (import.meta.env.DEV) {
 					console.warn(
 						`[lk-gallery-toolbar] Unknown tool "${tool}". ` +
 							`Register a renderer with GalleryToolbar.registerTool("${tool}", renderer) ` +

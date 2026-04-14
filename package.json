@@ -33,6 +33,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.11",
+    "@types/node": "^25.6.0",
     "@webcomponents/template-shadowroot": "^0.2.1",
     "lucide": "^1.8.0",
     "rollup-plugin-minify-template-literals": "^1.1.7",
